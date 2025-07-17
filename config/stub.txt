@@ -1,0 +1,5 @@
+read w:int
+read h:int
+read level:string(w)
+gameloop
+write L | R | UP | DOWN | OPEN

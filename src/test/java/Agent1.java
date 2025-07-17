@@ -1,12 +1,48 @@
-import java.util.Scanner;
+
 
 public class Agent1 {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
 
-        while (true) {
-            String input = scanner.nextLine();
-            System.out.println("my output");
-        }
+        System.out.println("R");
+        System.out.println("UP");
+        System.out.println("UP");
+        System.out.println("DOWN");
+        System.out.println("L");
+        System.out.println("L");
+        System.out.println("L");
+        System.out.println("L");
+
+
+
+
+        /* Working Solution.
+        System.out.println("R");
+        System.out.println("R");
+        System.out.println("R");
+        System.out.println("R");
+        System.out.println("R");
+
+        System.out.println("UP");
+        System.out.println("UP");
+        System.out.println("UP");
+
+        System.out.println("DOWN");
+        System.out.println("DOWN");
+        System.out.println("DOWN");
+        System.out.println("DOWN");
+        System.out.println("DOWN");
+
+        System.out.println("UP");
+        System.out.println("UP");
+
+        System.out.println("L");
+        System.out.println("L");
+        System.out.println("L");
+        System.out.println("OPEN");
+
+        System.out.println("SHUT IT");
+
+         */
+
     }
 }
