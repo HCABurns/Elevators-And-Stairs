@@ -6,6 +6,7 @@ import com.codingame.gameengine.core.AbstractPlayer.TimeoutException;
 import com.codingame.gameengine.core.AbstractReferee;
 import com.codingame.gameengine.core.SoloGameManager;
 import com.codingame.gameengine.module.entities.GraphicEntityModule;
+import com.codingame.gameengine.module.viewport.ViewportModule;
 import com.google.inject.Inject;
 import com.codingame.game.modules.Renderer;
 
@@ -14,6 +15,7 @@ public class Referee extends AbstractReferee {
     @Inject private SoloGameManager<Player> gameManager;
     @Inject private GraphicEntityModule graphicEntityModule;
     @Inject private Renderer renderer;
+    @Inject private ViewportModule viewportModule;
     private Map map;
     private Set<String> validMoves = new HashSet<>();
 
@@ -46,7 +48,20 @@ public class Referee extends AbstractReferee {
 
         // Get the inputs and send the required information to the user. (Room width and first room)
         gameManager.getPlayer().sendInputLine(String.valueOf(width));
-        //gameManager.getPlayer().sendInputLine(gameManager.getTestCaseInput().get(2));
+
+        // Set the visuals using Renderer.
+        renderer.setMap(map.getRooms());
+
+        // Set the brodo visuals...
+        renderer.setBrodo(map.getBrodo());
+        renderer.updateBrodo(map.getBrodo());
+
+        // Scale group
+        renderer.scaleGroup(map.getWidth(), map.getHeight());
+        renderer.getGroup().setZIndex(20);
+
+        //Add group to the viewport.
+        viewportModule.createViewport(renderer.getGroup());
 
         // Set valid moves.
         setValidMoves();
@@ -87,9 +102,7 @@ public class Referee extends AbstractReferee {
             System.out.println(Arrays.toString(map.getBrodoPosition()));
 
             // Update Visual
-            //renderer.
-
-            // Return position and the level...
+            renderer.updateBrodo(map.getBrodo());
         }
         catch (TimeoutException e){
             errorMessage = "Timeout...";

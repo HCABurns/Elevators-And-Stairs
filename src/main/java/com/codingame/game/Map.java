@@ -7,11 +7,9 @@ public class Map {
     // ArrayList holding the information about the rooms.
     private ArrayList<ArrayList<Room>> rooms = new ArrayList<>();
     private ArrayList<String> rooms_strings = new ArrayList<>();
+    private Brodo brodo;
     private int h;
-    private int w ;
-
-    private int y = 0;
-    private int x = 0;
+    private int w;
 
     // Constructor to create a board.
     public Map(int h, int w){
@@ -28,9 +26,9 @@ public class Map {
     public void addLevel(String level, int y){
         rooms_strings.add(level.replace('B',' '));
         ArrayList<Room> level_rooms = new ArrayList<>();
-        for (int x = 0; x <level.length(); x++){
+        for (int x = 0; x < level.length(); x++){
             char element = level.charAt(x);
-            if (element == 'B'){element = ' '; this.y = y; this.x = x;}
+            if (element == 'B'){element = ' '; brodo = new Brodo(y,x);}
             level_rooms.add(new Room(x, y, element));
         }
         rooms.add(level_rooms);
@@ -55,9 +53,9 @@ public class Map {
      */
     public void moveSideways(String action){
         if (action.equals("L")){
-            x -= 1;
+            brodo.x -= 1;
         }else{
-            x += 1;
+            brodo.x += 1;
         }
     }
 
@@ -66,21 +64,21 @@ public class Map {
      * @param action - Direction of motion.
      */
     public void moveVertical(String action){
-        Room room = rooms.get(y).get(x);
+        Room room = rooms.get(brodo.y).get(brodo.x);
         if (room.isIs_elevator()){
             if (action.equals("UP") && (room.getDirection() == Constants.Direction.UP || room.getDirection() == Constants.Direction.BOTH)){
-                this.y = room.getAboveY();
+                brodo.y = room.getAboveY();
             }else if (action.equals("DOWN") && (room.getDirection() == Constants.Direction.DOWN || room.getDirection() == Constants.Direction.BOTH)){
-                this.y = room.getBelowY();
+                brodo.y = room.getBelowY();
             }
         }
         if (room.isIs_stairs()){
             if (action.equals("UP") && (room.getDirection() == Constants.Direction.UP || room.getDirection() == Constants.Direction.BOTH)){
-                this.y = room.getAboveY();
-                this.x = room.getAboveX();
+                brodo.y = room.getAboveY();
+                brodo.x = room.getAboveX();
             }else if (action.equals("DOWN") && (room.getDirection() == Constants.Direction.DOWN || room.getDirection() == Constants.Direction.BOTH)){
-                this.y = room.getBelowY();
-                this.x = room.getBelowX();
+                brodo.y = room.getBelowY();
+                brodo.x = room.getBelowX();
             }
         }
     }
@@ -215,7 +213,11 @@ public class Map {
      * @return Boolean - True if at door otherwise false.
      */
     public boolean isAtDoor(){
-        return rooms.get(y).get(x).isIs_door();
+        return rooms.get(brodo.y).get(brodo.x).isIs_door();
+    }
+
+    public Brodo getBrodo() {
+        return brodo;
     }
 
     public Room getCell(int y, int j){return rooms.get(y).get(j);}
@@ -233,7 +235,7 @@ public class Map {
     }
 
     public int[] getBrodoPosition(){
-        return new int[]{y,x};
+        return new int[]{brodo.y,brodo.x};
     }
 
     public int getHeight() {
