@@ -216,6 +216,10 @@ public class Map {
         return rooms.get(brodo.y).get(brodo.x).isIs_door();
     }
 
+    public boolean isAtElevator(){
+        return rooms.get(brodo.y).get(brodo.x).isIs_elevator();
+    }
+
     public Brodo getBrodo() {
         return brodo;
     }

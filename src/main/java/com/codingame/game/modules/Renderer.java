@@ -9,6 +9,7 @@ import com.codingame.gameengine.core.SoloGameManager;
 import com.codingame.gameengine.module.entities.GraphicEntityModule;
 import com.codingame.gameengine.module.entities.Group;
 import com.codingame.gameengine.module.entities.Sprite;
+import com.codingame.gameengine.module.entities.SpriteAnimation;
 import com.google.inject.Inject;
 
 import java.io.Serializable;
@@ -23,7 +24,8 @@ public class Renderer implements Module {
     private final List<Map<String, Serializable>> allRooms = new ArrayList<>();
     private final GraphicEntityModule graphicEntityModule;
     private final Group group;
-    private ArrayList<ArrayList<Room>> rooms = new ArrayList<>();// Constants
+    private ArrayList<ArrayList<Room>> rooms = new ArrayList<>();
+    private ArrayList<ArrayList<Object>> sprites = new ArrayList<>();
     private Brodo previousBrodo;
     private Sprite brodoSprite;
     private double scaleX;
@@ -43,23 +45,38 @@ public class Renderer implements Module {
         this.rooms = rooms;
         for (int i = 0; i < rooms.size(); i++){
             ArrayList<Room> level = rooms.get(i);
+            ArrayList<Object> level_spites = new ArrayList<>();
             for (int j = 0; j < level.size(); j++){
                 //todo: Alter for stairs top and bottom.
                 String tileName = Constants.STANDARD;
                 if (Constants.ROOM_MAP.containsKey(level.get(j).getRoom())){
                     tileName = Constants.ROOM_MAP.get(level.get(j).getRoom());
                 }
-                System.out.println("Room: " + level.get(j).getRoom() + " " +Constants.ROOM_MAP.containsKey(level.get(j).getRoom()) + " Tlename: " + tileName);
-                int z_TILES = 5;
-                Sprite room = graphicEntityModule.createSprite()
-                        .setImage(tileName)
-                        .setX(j * Constants.CELL_SIZE)
-                        .setY((rooms.size()-i-1) * Constants.CELL_SIZE)
-                        .setAnchor(0)
-                        .setZIndex(z_TILES);
-                addRoom(room.getId(), room.getImage(), level.get(j).getRoom());
-                group.add(room);
+                if (level.get(j).getRoom()=='E'){
+                    SpriteAnimation room = graphicEntityModule.createSpriteAnimation()
+                            .setImages(Constants.e)
+                            .setX(j * Constants.CELL_SIZE)
+                            .setY((rooms.size()-i-1) * Constants.CELL_SIZE)
+                            .setDuration(600)
+                            .setLoop(false)
+                            .setPlaying(false)
+                            .setZIndex(getZ_UI());
+                    group.add(room);
+                    level_spites.add(room);
+                }else {
+                    int z_TILES = 5;
+                    Sprite room = graphicEntityModule.createSprite()
+                            .setImage(tileName)
+                            .setX(j * Constants.CELL_SIZE)
+                            .setY((rooms.size() - i - 1) * Constants.CELL_SIZE)
+                            .setAnchor(0)
+                            .setZIndex(z_TILES);
+                    addRoom(room.getId(), room.getImage(), level.get(j).getRoom());
+                    group.add(room);
+                    level_spites.add(room);
+                }
             }
+            sprites.add(level_spites);
         }
     }
 
@@ -68,8 +85,9 @@ public class Renderer implements Module {
         System.out.println("Brodo Starting position: " + brodo.getX() + " Y: " + (rooms.size()-brodo.getY()-1));
         brodoSprite = graphicEntityModule.createSprite()
                 .setImage(Constants.BRODO)
-                .setX((brodo.getX()-1) * Constants.CELL_SIZE)
-                //.setY((rooms.size()-brodo.getY()-1) * Constants.CELL_SIZE)
+                //.setX((brodo.getX()) * Constants.CELL_SIZE)
+                .setX(0)
+                .setY((rooms.size()-brodo.getY()-1) * Constants.CELL_SIZE)
                 .setY(0)
                 .setAnchor(0)
                 .setZIndex(10);
@@ -117,7 +135,11 @@ public class Renderer implements Module {
         System.out.println((centerX - scaledWidth / 2) + " |||| " + (centerY - scaledHeight / 2));
     }
 
-    public void updateBrodo(Brodo brodo){
+    public void updateBrodo(com.codingame.game.Map map){
+
+        Brodo brodo = map.getBrodo();
+        System.out.println("Brodo visuals updates");
+
         Map<String, Serializable> br = new HashMap<>();
 
         Map<String, Serializable> b = new HashMap<>();
@@ -130,11 +152,34 @@ public class Renderer implements Module {
         b.put("scaleX", scaleX);
         br.put("brodo", (Serializable) b);
 
-        System.out.println(brodo + " ::: " + previousBrodo);
+        //todo: New map with 2 elevators if needed to open and close when 50%
+        if (map.isAtElevator() && brodo.getY() != previousBrodo.getY()) {
+            brodoSprite.setZIndex(3);
+            gameManager.setFrameDuration(1000);
+            Map<String, Serializable> elevators = new HashMap<>();
+
+
+
+            SpriteAnimation sprite = (SpriteAnimation) sprites.get(brodo.getY()).get(brodo.getX());
+            SpriteAnimation prev_sprite = (SpriteAnimation) sprites.get(previousBrodo.getY()).get(previousBrodo.getX());
+
+            elevators.put("e2", sprite.getId());
+            elevators.put("e1", prev_sprite.getId());
+
+            br.put("elevators", (Serializable) elevators);
+
+            //sprite.play();
+            //prev_sprite.play();
+
+        }
 
         gameManager.setViewData("Renderer", br);
         previousBrodo = new Brodo(brodo.getY(), brodo.getX());
 
+    }
+
+    public void updatePreviousBrodo(Brodo brodo){
+        this.previousBrodo = brodo;
     }
 
     @Override
@@ -144,10 +189,6 @@ public class Renderer implements Module {
 
     @Override
     public void onAfterGameTurn() {
-
-        //gameManager.setViewData("Blah", allRooms);
-
-        // Move brodo with the renderer.js
 
     }
 

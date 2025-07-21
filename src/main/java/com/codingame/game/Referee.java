@@ -54,7 +54,7 @@ public class Referee extends AbstractReferee {
 
         // Set the brodo visuals...
         renderer.setBrodo(map.getBrodo());
-        renderer.updateBrodo(map.getBrodo());
+        renderer.updateBrodo(map);
 
         // Scale group
         renderer.scaleGroup(map.getWidth(), map.getHeight());
@@ -102,13 +102,15 @@ public class Referee extends AbstractReferee {
             System.out.println(Arrays.toString(map.getBrodoPosition()));
 
             // Update Visual
-            renderer.updateBrodo(map.getBrodo());
+            renderer.updateBrodo(map);
         }
         catch (TimeoutException e){
             errorMessage = "Timeout...";
             gameManager.loseGame(errorMessage);
         }
         catch (Warning e){
+            //renderer.updatePreviousBrodo(map.getBrodo());
+            //renderer.updateBrodo(map.getBrodo());
             System.err.println(e.getMessage());
         }
         catch (Exception e){

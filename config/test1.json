@@ -2,7 +2,7 @@
 	"title": {
 		"2": "Simple Test"
 	},
-	"testIn": "8\n3\n BS    E\n S     E\nD      E",
+	"testIn": "8\n3\nBES    E\n S     E\nD      E",
 	"isTest": "true",
-	"isValidator": "false"
+	"isValidator": "true"
 }

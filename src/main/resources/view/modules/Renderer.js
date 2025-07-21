@@ -22,14 +22,11 @@ export class Renderer {
       const brodoData = currentData.frameData.brodo;
       console.log(brodoData)
 
-      const nextX = brodoData.x * 256;
-      //const nextY = brodoData.y * 256;
-      const currentX = brodoData.prevX * 256;
-      //const currentY = brodoData.prevY * 256;
+      const nextX = (brodoData.x) * 256;
+      const currentX = (brodoData.prevX) * 256;
 
       const nextY = (3 - 1 - brodoData.y) * 256;
       const currentY = (3 - 1 - brodoData.prevY) * 256;
-
 
       const diffX = (nextX - currentX);
       const diffY = (nextY - currentY);
@@ -37,17 +34,34 @@ export class Renderer {
       const entity = entityModule.entities.get(brodoData.id);
       console.log(entity);
       if (entity) {
-
         if (diffX != 0 || diffY != 0){
-        console.log("Run Here 2")
             entity.graphics.x = currentX + (diffX * progress);
             entity.graphics.y = currentY + (diffY * progress);
+            if (diffX < 0) {
+              entity.graphics.scale.x = -brodoData.scaleX;
+              entity.graphics.anchor.x = 1;
+            } else if (diffX > 0) {
+              entity.graphics.scale.x = brodoData.scaleX;
+              entity.graphics.anchor.x = 0;
+            }
         }else{
-        console.log("Run Here 1")
-            entity.graphics.x = currentX * progress
-            entity.graphics.y = currentY * progress
+            entity.graphics.x = currentX;
+            entity.graphics.y = currentY;
+            entity.graphics.anchor.x = 0;
         }
       }
+    }
+    else{
+        console.log("Brodo not updated")
+        console.log(previousData)
+        if (previousData && previousData.frameData &&previousData.frameData.brodo){
+            const brodoData = previousData.frameData.brodo
+            const entity = entityModule.entities.get(brodoData.id);
+            if (entity){
+                entity.graphics.anchor.x = 0;
+                entity.graphics.scale.x = brodoData.scaleX;
+            }
+        }
     }
   }
 
